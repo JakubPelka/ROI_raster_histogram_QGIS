@@ -1,16 +1,16 @@
 [general]
 name=ROI Raster Histogram
-description=Clips a classified raster by ROI polygon mask and shows class histogram with percentages.
-about=Loads ROI and raster from files, clips raster by mask, calculates class counts and percentages in ROI, and displays results as a table and histogram.
+description=Calculate class histogram and class percentages inside a polygon ROI from a classified raster.
+about=Select ROI and raster layers from the current QGIS project, calculate a zonal histogram directly from ROI geometry, display the result as a table and chart, and export the report to HTML.
 version=0.1.0
-author=Jakub / ChatGPT
-email=your@email.com
-repository=https://example.com/replace-with-your-repo
-tracker=https://example.com/replace-with-your-issues
+author=Jakub Pelka
+email=
+repository=
+tracker=
 qgisMinimumVersion=3.40
 category=Raster
 icon=
-tags=roi,raster,histogram,classification,landcover,zonal
+tags=roi,raster,histogram,classified,zonal,landcover
 experimental=False
 deprecated=False
 hasProcessingProvider=False
