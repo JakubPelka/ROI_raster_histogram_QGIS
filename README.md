@@ -244,11 +244,7 @@ Best results are obtained when:
   - a **Raster Attribute Table**
 
 ## License
-
-Choose the license you want for GitHub, for example:
-
 - MIT License
-- GPL-3.0
 
 ## Author
 
