@@ -1,71 +1,178 @@
 # ROI Raster Histogram for QGIS
 
-A QGIS plugin for calculating class histograms inside polygon ROIs from a classified raster, reviewing both combined and per-feature results, exporting reports to HTML, and optionally writing class percentages back to the ROI attribute table.
+**Status:** MAINTAINED — working QGIS plugin, early public version  
+**License:** MIT  
+**Target platform:** QGIS 3.40 or newer recommended
 
-The plugin is designed for **classified single-band rasters** such as land cover, habitat maps, landscape classes, categorical environmental rasters, and similar datasets.
+ROI Raster Histogram is a free QGIS plugin for calculating class histograms inside polygon regions of interest (ROIs) from classified raster layers.
 
-## Main features
+It is designed for categorical, single-band rasters such as land cover maps, habitat maps, landscape classes, environmental classifications, or similar raster datasets where each pixel value represents a class.
 
-- Select **ROI polygon layer directly from the current QGIS project**
-- Select **raster layer directly from the current QGIS project**
-- Select raster **band**
-- Choose a **feature label field** for per-feature reporting and navigation
-- Calculate the histogram **directly from ROI geometry** using zonal histogram logic
-- Avoid false counts from raster bounding box / NoData area outside the polygon
-- Display a **combined summary** for all ROI features together
-- Display **per-feature results** with:
-  - feature selector
-  - Previous / Next navigation
-  - per-feature chart
-  - per-feature result table
-- Read class labels and colors from:
-  1. **Paletted raster renderer**
-  2. **Raster Attribute Table (RAT)** as fallback
-- Optionally add a **clipped raster preview** to the project
-- Export the result to **HTML report**
-- Optionally write **class percentage fields** to the ROI attribute table
+## What the plugin does
+
+The plugin calculates how much of each raster class occurs inside one or more polygon features.
+
+It can:
+
+- calculate a combined class histogram for all ROI polygons,
+- calculate per-feature class histograms,
+- show results as tables and charts inside QGIS,
+- read class labels and colors from a paletted raster renderer,
+- use Raster Attribute Table (RAT) information as a fallback,
+- export the result to an HTML report,
+- optionally write class percentage fields back to the ROI attribute table,
+- optionally add a clipped raster preview for visual inspection.
 
 ## Why this plugin exists
 
-A standard raster clip creates a rectangular raster extent. If statistics are calculated directly from that clipped raster, pixels outside the polygon but inside the bounding box may still affect the result.
+A common workflow is to clip a classified raster by a polygon and then calculate statistics from the clipped raster.
 
-This plugin avoids that problem by calculating the histogram **from the ROI geometry itself** instead of deriving statistics from the clipped raster preview.
+This can be misleading when the clipped raster keeps a rectangular extent. Pixels outside the polygon but inside the raster bounding box may still affect statistics if they are not handled correctly.
 
-## Current workflow
+ROI Raster Histogram avoids that problem by calculating the histogram from the ROI geometry itself, not from the visual clipped preview.
 
-1. Read ROI layer from the current QGIS project
-2. Read raster layer from the current QGIS project
-3. Add a temporary feature UID field for safe per-feature matching during processing
-4. Run **zonal histogram** for each ROI feature
-5. Read labels and colors from renderer or RAT
-6. Build:
-   - combined summary
-   - per-feature statistics
-7. Optionally write class percentages to the original ROI attribute table
-8. Optionally export a full HTML report
-9. Optionally add a clipped raster preview to the project for visual inspection
+The clipped raster preview is only a visual aid. It does not drive the final histogram calculation.
+
+## Typical use cases
+
+- land cover composition inside planning areas,
+- habitat share inside ecological study areas,
+- landscape class summaries for multiple polygons,
+- environmental reporting based on classified rasters,
+- checking dominant raster classes inside polygons,
+- writing class-percentage metrics back to polygon attributes for mapping or filtering.
+
+## Main features
+
+### Project-layer based workflow
+
+The plugin works directly with layers already loaded in the current QGIS project.
+
+You select:
+
+- ROI polygon layer,
+- classified raster layer,
+- raster band,
+- feature label field.
+
+### Combined summary
+
+The combined summary shows aggregated class statistics for all analyzed ROI features.
+
+It includes:
+
+- raster class value,
+- class label,
+- pixel count,
+- percentage share of all ROI pixels.
+
+### Per-feature details
+
+The feature details view lets you inspect each ROI polygon separately.
+
+It includes:
+
+- feature selector,
+- Previous / Next navigation,
+- per-feature chart,
+- per-feature result table,
+- total classified pixels,
+- dominant class value,
+- dominant class label,
+- dominant class percentage.
+
+### Class labels and colors
+
+The plugin tries to read class names and colors from:
+
+1. paletted raster renderer,
+2. Raster Attribute Table (RAT), if available.
+
+If labels are not available, raw raster values are used as class labels.
+
+### Attribute-table output
+
+When **Write class percentages to ROI attribute table** is enabled, the plugin writes results back to the original ROI layer.
+
+General fields:
+
+| Field | Meaning |
+| --- | --- |
+| `rh_totpx` | Total classified pixels inside the ROI feature |
+| `rh_domval` | Dominant raster class value |
+| `rh_domlbl` | Dominant raster class label |
+| `rh_dompct` | Dominant raster class percentage |
+
+Class percentage fields are created dynamically, one field per detected raster class.
+
+Example field names:
+
+| Example field | Meaning |
+| --- | --- |
+| `p_Akermark` | Percentage of the class named `Akermark` |
+| `p_Sjo` | Percentage of the class named `Sjo` |
+| `p_class001` | Fallback field name for class 001 |
+
+The attribute table is stored in a wide format:
+
+- one ROI feature = one row,
+- one class percentage = one column.
+
+GeoPackage is recommended when writing results back to attributes. Shapefiles have short field-name limits and may force stronger field-name shortening.
+
+### HTML export
+
+The HTML report includes:
+
+- ROI layer name,
+- raster layer name,
+- raster band,
+- selected feature label field,
+- combined summary,
+- combined chart,
+- combined result table,
+- per-feature overview table,
+- per-feature sections with charts and tables.
+
+The report is useful for documentation, review, sharing, or printing to PDF from a browser.
 
 ## Requirements
 
-- QGIS **3.40** or newer recommended
-- Classified raster, preferably:
-  - single band
-  - integer class values
-  - paletted renderer or raster attribute table
-- Polygon ROI layer
+- QGIS 3.40 or newer recommended.
+- Polygon ROI layer.
+- Classified raster layer, preferably:
+  - single-band,
+  - integer class values,
+  - paletted renderer or Raster Attribute Table.
+
+No external Python packages are required for runtime. The plugin uses Python, PyQt, QGIS API, GDAL tools, and QGIS Processing components provided by QGIS.
+
+## Recommended data setup
+
+Best results are obtained when:
+
+- ROI polygons are stored in GeoPackage,
+- raster is a categorical classified raster,
+- raster classes have labels and colors in a paletted renderer or Raster Attribute Table,
+- ROI polygons and raster are in compatible coordinate reference systems,
+- ROI features have a clear label/name field for easier review.
 
 ## Installation
 
-Copy the plugin folder into your QGIS profile plugin directory, for example:
+### Manual installation from repository folder
+
+Copy the plugin folder into your QGIS profile plugin directory.
+
+Example on Windows:
 
 ```text
-C:\Users\<USER>\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\Roi_raster_histogram
+C:\Users\<USER>\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\ROI_raster_histogram_QGIS
 ```
 
-The folder should contain at least:
+The plugin folder should contain at least:
 
 ```text
-Roi_raster_histogram/
+ROI_raster_histogram_QGIS/
 ├── __init__.py
 ├── metadata.txt
 └── roi_raster_histogram.py
@@ -73,178 +180,119 @@ Roi_raster_histogram/
 
 Then:
 
-1. Restart QGIS
-2. Open **Plugins > Manage and Install Plugins**
-3. Enable **ROI Raster Histogram**
+1. Restart QGIS.
+2. Open **Plugins > Manage and Install Plugins**.
+3. Enable **ROI Raster Histogram**.
+
+### Installation from ZIP package
+
+If a release ZIP is available:
+
+1. Open **Plugins > Manage and Install Plugins**.
+2. Choose **Install from ZIP**.
+3. Select the plugin ZIP file.
+4. Enable **ROI Raster Histogram**.
 
 ## Usage
 
-1. Load a polygon ROI layer into QGIS
-2. Load a classified raster layer into QGIS
-3. Open the plugin
+1. Load a polygon ROI layer into QGIS.
+2. Load a classified raster layer into QGIS.
+3. Open **ROI Raster Histogram** from the QGIS plugin menu or toolbar.
 4. Select:
-   - ROI polygon layer
-   - raster layer
-   - band
-   - feature label field
+   - ROI polygon layer,
+   - classified raster layer,
+   - raster band,
+   - feature label field.
 5. Optional:
-   - enable clipped raster preview
-   - enable writing class percentages to ROI attribute table
-6. Click **Run**
+   - enable clipped raster preview,
+   - enable writing class percentages to the ROI attribute table.
+6. Click **Run**.
 7. Review:
-   - **Combined summary** tab
-   - **Feature details** tab
-8. Optionally export the report to HTML
+   - **Combined summary** tab,
+   - **Feature details** tab.
+8. Optionally export the result to HTML.
 
-## Plugin interface
+## Output table columns
 
-### Combined summary
-
-This tab shows:
-
-- aggregated class histogram for all selected ROI features together
-- combined result table with:
-  - class value
-  - class label
-  - pixel count
-  - percent share in all ROI pixels
-
-This view is useful for understanding the overall class composition across the full ROI layer.
-
-### Feature details
-
-This tab shows:
-
-- feature selector
-- Previous / Next buttons
-- selected feature summary
-- per-feature histogram
-- per-feature result table
-
-This view is intended for actual inspection of individual ROI objects.
-
-## Output fields shown in tables
-
-The plugin reports:
-
-- **Value** – raster class value
-- **Label** – class label from renderer or RAT
-- **Pixel count** – number of pixels inside ROI
-- **% ROI** – percentage share of a class inside a specific ROI or in the combined ROI total
-
-## Writing results to the ROI attribute table
-
-When **Write class percentages to ROI attribute table** is enabled, the plugin writes summary statistics to the original ROI layer.
-
-### General fields
-
-The following helper fields are created when missing:
-
-- `rh_totpx` – total classified pixels in the feature
-- `rh_domval` – dominant class value
-- `rh_domlbl` – dominant class label
-- `rh_dompct` – dominant class percentage
-
-### Class percentage fields
-
-For each detected class, the plugin creates **one percentage field** in the ROI attribute table.
-
-Field names are based on class labels and shortened when necessary.
-
-Examples:
-
-- `p_Akermark`
-- `p_Sjo`
-- `p_class001`
-
-The exact field name depends on:
-
-- label length
-- allowed field-name length
-- uniqueness requirements
-
-This means the attribute table is stored in a **wide format**:
-
-- one ROI feature = one row
-- one class percentage = one column
-
-This is useful for:
-
-- filtering polygons by class share
-- styling polygons by percentage of a class
-- quick GIS analysis directly in the attribute table
-
-## HTML export
-
-The HTML export includes:
-
-- ROI layer name
-- raster layer name
-- band information
-- selected feature label field
-- overall summary
-- combined chart
-- combined result table
-- per-feature overview table
-- per-feature sections with:
-  - navigation links
-  - per-feature metadata
-  - per-feature chart
-  - per-feature result table
-
-This makes the report useful for browser viewing, documentation, sharing, or printing to PDF.
+| Column | Meaning |
+| --- | --- |
+| Value | Raster class value |
+| Label | Class label from renderer, RAT, or raw value fallback |
+| Pixel count | Number of pixels inside the ROI geometry |
+| % ROI | Percentage share of the class inside the ROI |
 
 ## Notes and limitations
 
-- Best suited for **categorical rasters**
-- Designed mainly for **single-band classified rasters**
-- Labels depend on renderer or RAT availability
-- If raster styling is unusual, labels may fall back to raw raster values
-- The clipped raster is only a **visual preview** and does **not** drive the histogram calculation
-- Field names written to the ROI table may be shortened for compatibility
-- Shapefiles have stronger field-name limitations than GeoPackage
-- **GeoPackage** is the recommended ROI storage format when writing results back to attributes
+- Best suited for categorical rasters.
+- Designed mainly for single-band classified rasters.
+- Labels depend on renderer or RAT availability.
+- If raster styling is unusual, labels may fall back to raw raster values.
+- The clipped raster is only a visual preview.
+- Field names written to the ROI table may be shortened for compatibility.
+- Shapefiles have stronger field-name limitations than GeoPackage.
+- Large rasters and many ROI polygons may require optimization in future versions.
 
-## Example use cases
+## Repository structure
 
-- Land cover composition inside planning polygons
-- Habitat share inside ecological study areas
-- Landscape structure summaries for multiple ROI features
-- Per-polygon classified raster statistics for environmental workflows
-- Writing class percentage metrics back to polygons for mapping and filtering
+```text
+ROI_raster_histogram_QGIS/
+├── README.md
+├── LICENSE
+├── CHANGELOG.md
+├── ROADMAP.md
+├── requirements.txt
+├── metadata.txt
+├── __init__.py
+├── roi_raster_histogram.py
+├── docs/
+│   ├── development.md
+│   ├── testing.md
+│   └── screenshots/
+│       └── README.md
+├── sample_data/
+│   └── README.md
+└── scripts/
+    └── package_plugin.py
+```
 
-## Current strengths
+The plugin code remains in the repository root so the repository folder can still work as a QGIS plugin folder during manual installation.
 
-- Works directly on project layers
-- Handles multiple ROI polygons
-- Supports per-feature review in the plugin window
-- Supports navigation across analyzed features
-- Supports HTML reporting
-- Supports writing reusable percentage fields back to the ROI layer
+A deeper package structure can be introduced later, but that should be done together with code refactoring and import-path updates.
 
-## Possible future improvements
+## Development notes
 
-- Automatic map selection / zoom to current feature in the details tab
-- CSV export
-- XLSX export
-- Copy current feature result to clipboard
-- Sorting options in tables
-- Better support for additional raster renderer types
-- Optional chart image export
-- Optional selection-only processing
+This repository should contain source code, documentation, and small synthetic sample data only.
 
-## Recommended data setup
+Do not commit:
 
-Best results are obtained when:
+- private geodata,
+- large rasters,
+- generated reports,
+- temporary clipped rasters,
+- local QGIS profile files,
+- ZIP backups,
+- exported outputs,
+- credentials or tokens.
 
-- ROI layer is stored as **GeoPackage**
-- raster is a **classified categorical raster**
-- classes are represented using:
-  - a **paletted renderer**, or
-  - a **Raster Attribute Table**
+See [`docs/development.md`](docs/development.md) and [`docs/testing.md`](docs/testing.md) for maintenance notes.
+
+## Roadmap
+
+Planned or possible improvements are tracked in [`ROADMAP.md`](ROADMAP.md).
+
+Current high-value candidates:
+
+- selection-only processing,
+- CSV export,
+- XLSX export,
+- automatic zoom/select current feature,
+- better handling of additional raster renderer types,
+- clearer large-data performance notes,
+- optional sample dataset for public testing.
 
 ## License
-- MIT License
+
+MIT License. See [`LICENSE`](LICENSE).
 
 ## Author
 

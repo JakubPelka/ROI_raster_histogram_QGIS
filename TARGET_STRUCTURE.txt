@@ -1,0 +1,20 @@
+ROI_raster_histogram_QGIS/
+├── README.md                         # replace current README
+├── LICENSE                           # add
+├── CHANGELOG.md                      # add
+├── ROADMAP.md                        # add
+├── requirements.txt                  # add
+├── .gitignore                        # add
+├── .gitattributes                    # keep current file
+├── metadata.txt                      # replace/normalize metadata formatting
+├── __init__.py                       # replace if currently empty; required QGIS entry point
+├── roi_raster_histogram.py           # keep current working code for now
+├── docs/
+│   ├── development.md                # add
+│   ├── testing.md                    # add
+│   └── screenshots/
+│       └── README.md                 # add
+├── sample_data/
+│   └── README.md                     # add; no real/private data
+└── scripts/
+    └── package_plugin.py             # add

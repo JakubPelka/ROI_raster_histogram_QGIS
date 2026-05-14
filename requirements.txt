@@ -1,0 +1,8 @@
+# Runtime dependencies are provided by QGIS.
+# No external pip packages are required for normal plugin use.
+#
+# Recommended runtime environment:
+# - QGIS 3.40 or newer
+# - QGIS Processing enabled
+# - GDAL tools available through QGIS
+# - PyQt provided by QGIS
