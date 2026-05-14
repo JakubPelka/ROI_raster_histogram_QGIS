@@ -1,0 +1,67 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# QGIS / plugin local files
+*.qgz
+*.qgs
+*.qgs~
+*.qml~
+*.sld~
+*.bak
+
+# Temporary working folders
+TEMP/
+OLD/
+tmp/
+temp/
+
+# Local test data and generated outputs
+output/
+outputs/
+exports/
+reports/
+results/
+*.html
+*.csv
+*.xlsx
+
+# Heavy GIS data - do not store real/private data in repo
+*.tif
+*.tiff
+*.vrt
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.qix
+*.geojson
+*.json
+*.zip
+*.7z
+*.rar
+
+# Exception: allow documentation placeholders
+!sample_data/README.md
+!docs/**/*.md
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
