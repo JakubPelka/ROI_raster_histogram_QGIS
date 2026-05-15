@@ -15,15 +15,14 @@ The plugin works and is useful, but the code should still be reviewed before tre
 - [x] Add `.gitignore` focused on QGIS, Python, generated outputs, archives, and geodata safety.
 - [x] Add basic development notes.
 - [x] Add testing checklist.
-- [ ] Add screenshots.
+- [x] Add screenshots.
 - [ ] Add a small synthetic sample dataset, if useful and safe.
 
 ## Priority 2 — plugin stability
 
-- [ ] Test manual installation from copied plugin folder.
-- [ ] Test installation from ZIP package.
-- [ ] Test on a clean QGIS profile.
-- [ ] Test on QGIS 3.40 LTR.
+- [x] Test installation from ZIP package.
+- [x] Test on a clean QGIS profile.
+- [x] Test on QGIS 3.40 LTR.
 - [ ] Check whether plugin metadata is fully valid.
 - [ ] Check whether all imports are required.
 - [ ] Review error handling for missing/invalid layers.
